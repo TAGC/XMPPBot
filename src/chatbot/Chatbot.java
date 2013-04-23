@@ -76,8 +76,11 @@ public class Chatbot {
 					String response;
 					
 					try {
-						api.joinRoom(newRoom);
-						response = newRoom + " successfully joined";
+						if(api.joinRoom(newRoom)) {
+							response = newRoom + " successfully joined";
+						} else {
+							response = "I'm already in " + newRoom;
+						}
 					} catch (XMPPException e) {
 						response = "Unable to connect to " + newRoom;
 						e.printStackTrace();

@@ -30,23 +30,27 @@ public class JabberSmackAPI implements MessageListener {
 	Map<String, MultiUserChat> chats;
 	List<Event> events;
 	
-	private PacketListener MUCMessageListener = new PacketListener() {
+	private PacketListener getMUCMessageListener() {
 		
-		@Override
-		public void processPacket(Packet packet) {
-			Message message = (Message) packet;
-			if(message.getBody() != null) {
-				String sender = message.getFrom().substring(
-						message.getFrom().indexOf('/')+1);
-				String roomName = message.getFrom().substring(0,
-						message.getFrom().indexOf('@'));
-				
-				events.add(new GroupMessageReceived(sender, roomName,
-						message.getBody()));
-			}
+		PacketListener MUCMessageListener = new PacketListener() {
 			
-		}
-	};
+			@Override
+			public void processPacket(Packet packet) {
+				Message message = (Message) packet;
+				if(message.getBody() != null) {
+					String sender = message.getFrom().substring(
+							message.getFrom().indexOf('/')+1);
+					String roomName = message.getFrom().substring(0,
+							message.getFrom().indexOf('@'));
+					
+					events.add(new GroupMessageReceived(sender, roomName,
+							message.getBody()));
+				}			
+			}
+		};
+		
+		return MUCMessageListener;
+	}
 	
 	public JabberSmackAPI() {
 		chats = new HashMap<String, MultiUserChat>();
@@ -108,7 +112,7 @@ public class JabberSmackAPI implements MessageListener {
 			DiscussionHistory history = new DiscussionHistory();
 			history.setSeconds(0);
 			chat.join(Conf.NICKNAME, null, history, Integer.MAX_VALUE);
-			chat.addMessageListener(MUCMessageListener);
+			chat.addMessageListener(getMUCMessageListener());
 			chats.put(roomName, chat);
 			return true;
 		}
