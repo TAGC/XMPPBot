@@ -1,4 +1,5 @@
 package chatbot;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,6 +10,7 @@ import configuration.Conf;
 import events.DisconnectInstruction;
 import events.Event;
 import events.GroupMessageReceived;
+import events.RoomJoinInstruction;
 
 
 public class Chatbot {
@@ -58,14 +60,36 @@ public class Chatbot {
 				switch(event.getEventType()) {
 				
 				case GRP_MESSAGE_RCV:
-					GroupMessageReceived message = (GroupMessageReceived) event;
-					processMessage(message.getSender(), message.getRoomName(),
-							message.getBody());
+					GroupMessageReceived msg = (GroupMessageReceived) event;
+					processMessage(msg.getSender(), msg.getRoomName(),
+							msg.getBody());
 					break;
 					
 				case DISCONNECT_INSTR:
 					api.disconnect();
 					System.exit(0);
+					
+				case ROOM_JOIN_INSTR:
+					RoomJoinInstruction instr = (RoomJoinInstruction) event;
+					String newRoom = instr.getNewRoom();
+					String currRoom = instr.getCurrRoom();
+					String response;
+					
+					try {
+						api.joinRoom(newRoom);
+						response = newRoom + " successfully joined";
+					} catch (XMPPException e) {
+						response = "Unable to connect to " + newRoom;
+						e.printStackTrace();
+					}
+					
+					try {
+						api.sendRoomMessage(response, currRoom);
+					} catch (XMPPException e) {
+						e.printStackTrace();
+					}
+					
+					break;
 					
 				default:
 					System.out.println("Unrecognised event type: " +
@@ -109,6 +133,34 @@ public class Chatbot {
 			api.addEvent(disconnectInstr);
 			response = "Disconnecting...";
 		
+		// Check for instruction to join a room (controller only).
+		} else if(simpInt.checkPhraseInMessage("join", body)
+				&& simpInt.checkIdentity(body)) {
+			
+			if(!checkController(sender)) {
+				response = "Sorry " + sender + ", you're not authorised " +
+						"to perform that action";
+			} else {
+				String[] parsedBody = simpInt.parseMessage(body);
+
+				for(int i=0; i < parsedBody.length; i++) {
+					if(parsedBody[i].equals("join")) {
+						if(i == parsedBody.length - 1) {
+							response = "Please restate instruction with " +
+									"specified room";
+							break;
+						} else {
+							String newRoom = parsedBody[i+1];
+							Event RoomJoinInstruction =
+									new RoomJoinInstruction(newRoom, roomName);
+							api.addEvent(RoomJoinInstruction);
+							response = "Attempting to join " + newRoom + "...";
+							break;
+						}
+					}
+				}
+			}
+			
 		// Check if person is referencing this chatbot.
 		} else if(simpInt.checkIdentity(body)) {
 			response = simpInt.retInquiry(true);
@@ -119,6 +171,10 @@ public class Chatbot {
 		}
 		
 		if(response != null) sendRoomMessage(response, roomName);
+	}
+	
+	private boolean checkController(String username) {
+		return Arrays.asList(Conf.MASTERS).contains(username);
 	}
 
 	public void joinRoom(String roomName) {

@@ -26,7 +26,7 @@ public class SimpleInteractor {
 		identityCheck = false;
 	}
 	
-	private String[] parseMessage(String message) {
+	public String[] parseMessage(String message) {
 		String regex = "(!|\\?)";
 		return message.toLowerCase().replaceAll(regex, "").split(" ");
 	}

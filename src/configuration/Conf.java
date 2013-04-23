@@ -6,4 +6,5 @@ public class Conf {
 	public static final String SERVER = "neko.im";
 	public static final String[] ROOMS = new String[]{"yaypew"};
 	public static final String[] IDENTITIES = new String[]{"mofichan", "mofi"};
+	public static final String[] MASTERS = new String[]{"Tag"};
 }
