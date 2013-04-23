@@ -36,9 +36,6 @@ public class JabberSmackAPI implements MessageListener {
 		public void processPacket(Packet packet) {
 			Message message = (Message) packet;
 			if(message.getBody() != null) {
-				System.out.println(message.getFrom() + ": " +
-					message.getBody());
-				
 				String sender = message.getFrom().substring(
 						message.getFrom().indexOf('/')+1);
 				String roomName = message.getFrom().substring(0,

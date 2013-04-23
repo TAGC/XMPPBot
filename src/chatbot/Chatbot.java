@@ -1,5 +1,6 @@
 package chatbot;
 import java.util.List;
+import java.util.Scanner;
 
 import org.jivesoftware.smack.XMPPException;
 
@@ -21,8 +22,10 @@ public class Chatbot {
 	public void initialise() {
 		api = new JabberSmackAPI();
 		simpInt = new SimpleInteractor();
+		
 		try {
-			api.login(Conf.USERNAME, Conf.PASSWORD);
+			System.out.println("Password: ");
+			api.login(Conf.USERNAME, new Scanner(System.in).next());
 		} catch (XMPPException e) {
 			System.out.println("Error in initialising chatbot...\n");
 			e.printStackTrace();
