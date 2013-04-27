@@ -1,6 +1,6 @@
 package chatbot;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Queue;
 import java.util.Scanner;
 
 import org.jivesoftware.smack.XMPPException;
@@ -36,7 +36,7 @@ public class Chatbot {
 	}
 	
 	public void processEvents() {
-		List<Event> events;
+		Queue<Event> events;
 		Event event;
 		int sleepTime = 0;
 		
@@ -56,7 +56,7 @@ public class Chatbot {
 			}
 			
 			while(!events.isEmpty()) {
-				event = events.remove(0);
+				event = events.remove();
 				switch(event.getEventType()) {
 				
 				case GRP_MESSAGE_RCV:

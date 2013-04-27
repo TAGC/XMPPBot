@@ -2,8 +2,8 @@ package api;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -19,7 +19,6 @@ import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import configuration.Conf;
-
 import events.Event;
 import events.GroupMessageReceived;
 
@@ -28,7 +27,7 @@ public class JabberSmackAPI implements MessageListener {
 	
 	XMPPConnection connection;
 	Map<String, MultiUserChat> chats;
-	List<Event> events;
+	Queue<Event> events;
 	
 	private PacketListener getMUCMessageListener() {
 		
@@ -57,7 +56,7 @@ public class JabberSmackAPI implements MessageListener {
 		events = new LinkedList<Event>();
 	}
 	
-	public List<Event> getEvents() {
+	public Queue<Event> getEvents() {
 		return events;
 	}
 	
